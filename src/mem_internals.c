@@ -18,14 +18,75 @@ unsigned long knuth_mmix_one_round(unsigned long in)
 void *mark_memarea_and_get_user_ptr(void *ptr, unsigned long size, MemKind k)
 {
     /* ecrire votre code ici */
-    return (void *)0;
+    uint64_t taille_marquee = size  ;      // delta == 32
+    uint64_t * adresse_marquee = (uint64_t*)ptr;
+    unsigned long magic = knuth_mmix_one_round((unsigned long)adresse_marquee);
+    switch (k){
+        case SMALL_KIND:
+            magic &= ~0b11UL;
+            break;
+        case MEDIUM_KIND:
+            magic &= ~0b10UL;
+            break;
+        case LARGE_KIND:
+            magic &= ~0b01UL;
+            break;
+        default : break;
+    }
+    *adresse_marquee = (uint64_t)taille_marquee;
+    *(adresse_marquee+1) = (uint64_t) magic;
+    *(adresse_marquee +size/8 -2) = (uint64_t)taille_marquee;
+    *(adresse_marquee +size/8 -1 ) = (uint64_t)magic;
+    return (void *)adresse_marquee;
 }
 
 Alloc
 mark_check_and_get_alloc(void *ptr)
 {
-    /* ecrire votre code ici */
+    /* recup de marquage */
     Alloc a = {};
+    a.ptr = (void*)((uint64_t*)ptr - 2 );
+    switch ((*(uint64_t*)ptr - 1) & (0b11UL )){
+        case 0: 
+            a.kind=SMALL_KIND;
+            break;
+        case 1:
+            a.kind = MEDIUM_KIND;
+            break;
+        case 2:
+            a.kind = LARGE_KIND;
+            break;
+        default:break;
+    }
+    a.size = (unsigned long) (*(uint64_t*)a.ptr); 
+    /*verification---------*/
+    unsigned long magic = knuth_mmix_one_round((unsigned long)a.ptr);
+    switch (a.kind){
+        case SMALL_KIND:
+            magic &=0b00UL;
+            break;
+        case MEDIUM_KIND:
+            magic &=0b01UL;
+            break;
+        case LARGE_KIND:
+            magic &=0b10UL;
+            break;
+        default : break;
+    }
+    if((uint64_t)magic != *((uint64_t*)a.ptr + 1)){
+        fprintf(stderr,"Le nombre magique est invalide");
+        exit(1);
+    }
+    if( *(uint64_t*)a.ptr != (uint64_t)(*(uint8_t*)ptr+a.size-16) ){
+        fprintf(stderr,"Le marquage est invalide (la taille du debut != taille fin)");
+        exit(1);
+
+    }
+    if( *(uint64_t*)a.ptr+1 != (uint64_t)(*(uint8_t*)ptr+a.size-8) ){
+        fprintf(stderr,"Le marquage est invalide (le nombre magique du debut != celui de la fin)");
+        exit(1);
+    }
+
     return a;
 }
 
