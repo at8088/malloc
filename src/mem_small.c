@@ -12,7 +12,19 @@ void *
 emalloc_small(unsigned long size)
 {
     /* ecrire votre code ici */
-    return (void *)0;
+    void * adresse_allouee_utilisabe = arena.chunkpool;
+    if(arena.chunkpool != NULL){
+        arena.chunkpool = arena.chunkpool + 96 ;                   // supprimer la tete de la liste .
+        adresse_allouee_utilisabe = mark_memarea_and_get_user_ptr(adresse_allouee_utilisabe
+        ,CHUNKSIZE,SMALL_KIND);
+        return (void *)adresse_allouee_utilisabe;
+    }else{
+        unsigned long nv_size = mem_realloc_small();
+        
+
+    }
+
+
 }
 
 void efree_small(Alloc a) {
