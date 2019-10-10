@@ -14,7 +14,7 @@
 /** squelette du TP allocateur memoire */
 
 MemArena arena = {};
-
+/**yridfyofiy/
 
 /* ecrire votre code ici */
 
@@ -25,7 +25,7 @@ emalloc(unsigned long size)
     /*  ecrire votre code ici */
     if (size == 0)
 	return NULL;
-	    
+
     if (size >= LARGEALLOC)
 	return emalloc_large(size);
     else if (size <= SMALLALLOC)
@@ -34,7 +34,7 @@ emalloc(unsigned long size)
 	return emalloc_medium(size);
 }
 
-void 
+void
 efree(void *ptr)
 {
     /* ecrire votre code ici */
@@ -54,5 +54,3 @@ efree(void *ptr)
 	assert(0);
     }
 }
-
-
