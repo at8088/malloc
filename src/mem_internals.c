@@ -61,7 +61,7 @@ mark_check_and_get_alloc(void *ptr)
 
     /*verification---------*/
    
-    unsigned long magic = knuth_mmix_one_round((unsigned long)(a.ptr - 16));
+    unsigned long magic = knuth_mmix_one_round((unsigned long)(a.ptr ));
     switch (a.kind){
 
         case SMALL_KIND:
@@ -76,11 +76,11 @@ mark_check_and_get_alloc(void *ptr)
         default : break;
     }
     
-    assert((uint64_t)magic != *((uint64_t*)a.ptr + 1));
+    assert((uint64_t)magic == *((uint64_t*)a.ptr + 1));
 
-    assert( *(uint64_t*)a.ptr != (uint64_t)(*(uint8_t*)ptr+a.size-16) );
+    assert( *(uint64_t*)a.ptr == *((uint64_t*)a.ptr+a.size/8 - 2)) ;
        
-    assert( *(uint64_t*)a.ptr+1 != (uint64_t)(*(uint8_t*)ptr+a.size-8) );
+    assert( *((uint64_t*)a.ptr+1) == *((uint64_t*)a.ptr+a.size/8 - 1)) ; 
  
     
     return a;
