@@ -27,7 +27,10 @@ emalloc_medium(unsigned long size)
 {
     assert(size < LARGEALLOC);
     assert(size > SMALLALLOC);
-    /* ecrire votre code ici */
+    unsigned int indice=puiss2(size);
+    if(indice<=TZL_SIZE){
+      return mark_memarea_and_get_user_ptr()
+    }
     return (void *) 0;
 }
 
@@ -35,5 +38,3 @@ emalloc_medium(unsigned long size)
 void efree_medium(Alloc a) {
     /* ecrire votre code ici */
 }
-
-

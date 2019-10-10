@@ -11,15 +11,19 @@
 void *
 emalloc_small(unsigned long size)
 {
- 
+
     void * adresse_allouee_utilisable = arena.chunkpool;
+
     if(arena.chunkpool != NULL){
         arena.chunkpool = arena.chunkpool + CHUNKSIZE ;                   // supprimer la tete de la liste .
         adresse_allouee_utilisable = mark_memarea_and_get_user_ptr(adresse_allouee_utilisable
         ,CHUNKSIZE,SMALL_KIND);
         return (void *)adresse_allouee_utilisable;
-    }else{
+    }
+    //si arena.chunkpool=NULL
+    else{
         unsigned long nv_size = mem_realloc_small();
+        //construction de la liste chainé de taille nv_size
         void * chunk_suivant = arena.chunkpool + CHUNKSIZE;
         void ** chunk_courant = arena.chunkpool;
         while(chunk_suivant < arena.chunkpool + nv_size - CHUNKSIZE){
@@ -28,8 +32,8 @@ emalloc_small(unsigned long size)
             chunk_courant+=CHUNKSIZE/sizeof(void*);
         }
         adresse_allouee_utilisable = mark_memarea_and_get_user_ptr(arena.chunkpool
-        ,CHUNKSIZE,SMALL_KIND);
-        arena.chunkpool = arena.chunkpool + CHUNKSIZE ;                  
+        ,CHUNKSIZE,SMALL_KIND); //marquage
+        arena.chunkpool = arena.chunkpool + CHUNKSIZE ; //on enleve le prelier element de la liste                 
         return (void *)adresse_allouee_utilisable;
 
     }
