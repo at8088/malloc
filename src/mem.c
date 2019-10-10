@@ -14,7 +14,7 @@
 /** squelette du TP allocateur memoire */
 
 MemArena arena = {};
-/**yridfyofiy*/
+
 
 /* ecrire votre code ici */
 
