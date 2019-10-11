@@ -32,7 +32,7 @@ void  decoupage_bloc(int indice_case_a_decouper, int nbr_decoupage, unsigned lon
     // écrire l'adresse de l'élément libre suivant (ie le buddy) dans le nouveau bloc créer 
     // sous forme d'un nombre de 64 bits == sizeof(void*) sur les machines de l'ensimag
     *((uint64_t*)arena.TZL[indice_case_a_decouper-1]) = (uint64_t)((uint64_t)arena.TZL[indice_case_a_decouper-1] ^ (uint64_t)taille_case_a_decouper/2);
-
+    // segfault ligne au dessus 
     decoupage_bloc(indice_case_a_decouper-1,nbr_decoupage,taille_case_a_decouper/2);
 
 }
