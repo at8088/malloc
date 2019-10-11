@@ -30,9 +30,10 @@ void  decoupage_bloc(int indice_case_a_decouper, int nbr_decoupage, unsigned lon
     arena.TZL[indice_case_a_decouper] = NULL;           // NULL == il existe plus de bloc de la taile 2**indice_case_a_decouper
 
     // écrire l'adresse de l'élément libre suivant (ie le buddy) dans le nouveau bloc créer 
-    // sous forme d'un nombre de 64 bits == sizeof(void*) sur les machines de l'ensimag
-    *((uint64_t*)arena.TZL[indice_case_a_decouper-1]) = (uint64_t)((uint64_t)arena.TZL[indice_case_a_decouper-1] ^ (uint64_t)taille_case_a_decouper/2);
-    // segfault ligne au dessus 
+   
+    void ** tmp= (void**) arena.TZL[indice_case_a_decouper-1];
+    *tmp = (void*)((uint64_t)arena.TZL[indice_case_a_decouper-1] ^ (uint64_t)taille_case_a_decouper/2);
+    
     decoupage_bloc(indice_case_a_decouper-1,nbr_decoupage,taille_case_a_decouper/2);
 
 }
@@ -57,16 +58,12 @@ emalloc_medium(unsigned long size)
     }
     // A ce point là soit la case "indice" pointe vers un bloc de taille size soit y avait pas de bloc plus grand disponible
     if(!bloc_plus_grand_trouve){
-        unsigned long nv_taille_max = mem_realloc_medium();
-        decoupage_bloc(FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant , 
-        FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant-indice , nv_taille_max); 
-        //On aurait pu utiliser la variable taille_case_i . Elle aura atteint
-        // 2**FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant
+        mem_realloc_medium();
+        decoupage_bloc(FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant - 1, 
+        FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant-indice-1, taille_case_i); 
     }
-
-    void* adresse_a_renvoyer = arena.TZL[indice];
+    void* adresse_a_renvoyer = mark_memarea_and_get_user_ptr((void*)arena.TZL[indice],size,MEDIUM_KIND);
     arena.TZL[indice] = (void*) (*((uint64_t*)arena.TZL[indice])) ;
-
     return (void *) adresse_a_renvoyer;
 }
 
