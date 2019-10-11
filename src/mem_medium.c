@@ -27,13 +27,21 @@ void  decoupage_bloc(int indice_case_a_decouper, int nbr_decoupage, unsigned lon
     //découper == pointer la case précédente vers la moitié du bloc courant
     arena.TZL[indice_case_a_decouper-1] = arena.TZL[indice_case_a_decouper] + taille_case_a_decouper/2;
 
-    arena.TZL[indice_case_a_decouper] = NULL;           // NULL == il existe plus de bloc de la taile 2**indice_case_a_decouper
-
     // écrire l'adresse de l'élément libre suivant (ie le buddy) dans le nouveau bloc créer 
-   
     void ** tmp= (void**) arena.TZL[indice_case_a_decouper-1];
     *tmp = (void*)((uint64_t)arena.TZL[indice_case_a_decouper-1] ^ (uint64_t)taille_case_a_decouper/2);
     
+    // si la case decoupée est la "derniere" on la pointe vers NULL
+    if(indice_case_a_decouper == FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant){
+        arena.TZL[indice_case_a_decouper] = NULL;                               
+    }else{         
+        arena.TZL[indice_case_a_decouper] = (void*)(*((uint64_t*)tmp));
+    }
+
+
+
+   
+    // printf("adr next = %p ",*tmp);
     decoupage_bloc(indice_case_a_decouper-1,nbr_decoupage,taille_case_a_decouper/2);
 
 }
