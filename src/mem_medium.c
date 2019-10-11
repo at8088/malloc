@@ -31,7 +31,7 @@ void  decoupage_bloc(int indice_case_a_decouper, int nbr_decoupage, unsigned lon
 
     // écrire l'adresse de l'élément libre suivant (ie le buddy) dans le nouveau bloc créer 
     // sous forme d'un nombre de 64 bits == sizeof(void*) sur les machines de l'ensimag
-    *((uint64_t*)arena.TZL[indice_case_a_decouper-1]) = (uint64_t)((void*)arena.TZL[indice_case_a_decouper-1] ^ taille_case_a_decouper/2);
+    *((uint64_t*)arena.TZL[indice_case_a_decouper-1]) = (uint64_t)((uint64_t)arena.TZL[indice_case_a_decouper-1] ^ (uint64_t)taille_case_a_decouper/2);
 
     decoupage_bloc(indice_case_a_decouper-1,nbr_decoupage,taille_case_a_decouper/2);
 
@@ -50,7 +50,7 @@ emalloc_medium(unsigned long size)
         // trouver le  bloc le + petit qui convient
         taille_case_i *= 2;                    
         if(arena.TZL[i]!=NULL){
-            decoupage_bloc(i,i-k,taille_case_i);
+            decoupage_bloc(i,i-indice,taille_case_i);
             bloc_plus_grand_trouve = 1;
             break;
         }
@@ -59,7 +59,7 @@ emalloc_medium(unsigned long size)
     if(!bloc_plus_grand_trouve){
         unsigned long nv_taille_max = mem_realloc_medium();
         decoupage_bloc(FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant , 
-        FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant-k , nv_taille_max); 
+        FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant-indice , nv_taille_max); 
         //On aurait pu utiliser la variable taille_case_i . Elle aura atteint
         // 2**FIRST_ALLOC_MEDIUM_EXPOSANT+arena.medium_next_exponant
     }
