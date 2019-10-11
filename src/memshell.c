@@ -410,7 +410,6 @@ int main() {
 			if (res == NULL) {
 				printf("Erreur : échec de l'allocation (fonction emalloc, retour=NULL)\n");
 			} else {
-				printf("magic = %lld\n",*((unsigned long long*)res -1));
 				
 				id = get_id(res, args.size);
 				if (id == 0) {
